@@ -1,11 +1,11 @@
 import logging
 
-from movie_predictor.api.config import Config
+from src.movie_predictor.api.config import Config
 from flask import Flask
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy_utils import database_exists, create_database
+# from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.ext.declarative import declarative_base
 
 

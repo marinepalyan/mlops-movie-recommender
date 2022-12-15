@@ -2,10 +2,7 @@ from sqlalchemy import Column, String, DateTime, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
 
-
-from core import Base
-
-
+from .core import Base
 
 
 class Ridge_regression(Base):
@@ -18,4 +15,3 @@ class Ridge_regression(Base):
     model_version = Column(String(36), nullable=False)
     inputs = Column(JSONB)
     outputs = Column(JSONB)
-
