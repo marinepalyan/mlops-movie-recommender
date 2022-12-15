@@ -3,6 +3,7 @@ import pytest
 import warnings
 from src.movie_predictor.models.model_loading import load_model
 from src.movie_predictor.data.load_data import load_data
+from sklearn.pipeline import make_pipeline
 
 warnings.filterwarnings("ignore")
 
