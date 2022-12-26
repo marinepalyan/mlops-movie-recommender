@@ -18,7 +18,7 @@ for req in reqs:
         packages.append(req)
 
 setuptools.setup(
-    name="{{ cookiecutter.model_name }}",
+    name="movie_predictor",
     version=about["__version__"],
     package_dir={"": "src"},
     packages=setuptools.find_namespace_packages(where="src"),
