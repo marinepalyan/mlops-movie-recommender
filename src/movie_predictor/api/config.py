@@ -5,6 +5,10 @@ import sys
 
 import api
 
+import typing as t
+from pydantic import BaseModel, validator
+from yaml import safe_load
+
 # logging format
 FORMATTER = logging.Formatter(
     "%(asctime)s — %(name)s — %(levelname)s —" "%(funcName)s:%(lineno)d — %(message)s"
@@ -14,7 +18,7 @@ FORMATTER = logging.Formatter(
 ROOT = pathlib.Path(api.__file__).resolve().parent.parent
 
 
-class Config:
+class Config(BaseModel):
     DEBUG = False
     TESTING = False
     ENV = os.getenv("FLASK_ENV", "production")
@@ -32,6 +36,9 @@ class Config:
     DB_PORT = os.getenv("DB_PORT", 7619)
     DB_HOST = os.getenv("DB_HOST", "0.0.0.0")
     DB_NAME = os.getenv("DB_NAME", "ml_api_dev")
+    
+    app_config: AppConfig
+    model_config: ModelConfig
 
 
 class DevelopmentConfig(Config):
@@ -56,7 +63,30 @@ class TestingConfig(Config):
         f"{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
+class AppConfig(BaseModel):
+    """
+    Application-level config.
+    """
 
+    package_name: str
+    pipeline_name: str
+    pipeline_save_file: str
+    cleaned_data: str
+
+
+class ModelConfig(BaseModel):
+    """
+    All configuration relevant to model
+    training and feature engineering.
+    """
+
+    drop_features: t.Sequence[str]
+    target: str
+    cat: t.Sequence[str]
+    num: t.Sequence[str]
+    test_size: float
+
+        
 class ProductionConfig(Config):
     pass
 
