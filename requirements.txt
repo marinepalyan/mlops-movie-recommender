@@ -13,4 +13,5 @@ api~=0.0.7
 
 # config parsing
 # PyYAML==6.0 # maybe also makes sense
-pydantic>=1.8.1,<1.9.0 #as we use python 3.* 
+pydantic>=1.8.1,<1.9.0 #as we use python 3.*
+SQLAlchemy-Utils==0.39.0
