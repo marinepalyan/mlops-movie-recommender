@@ -218,5 +218,5 @@ model_combined_optimal.score(X_test,y_test)
 #     pickle.dump(model_combined_optimal.best_estimator_, f)
 
 import joblib
-joblib.dump(model_combined_optimal.best_estimator_, 'model.pkl', compress=1)
+joblib.dump(model_combined_optimal.best_estimator_, '../models/model.pkl', compress=1)
 
