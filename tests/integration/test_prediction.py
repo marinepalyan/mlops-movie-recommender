@@ -1,10 +1,10 @@
 import pytest
 
 import warnings
-from src.movie_predictor.models.model_loading import load_model
-from src.movie_predictor.data.load_data import load_data
+from movie_predictor.models.model_loading import load_model
+from movie_predictor.data.load_data import load_data
 
-from src.movie_predictor.inference.predict import predict
+from movie_predictor.inference.predict import predict
 
 warnings.filterwarnings("ignore")
 

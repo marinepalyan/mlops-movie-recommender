@@ -5,7 +5,7 @@ from enum import Enum
 
 import pandas as pd
 
-from src.movie_predictor.api.predict import make_prediction as make_live_prediction
+from movie_predictor.api.predict import make_prediction as make_live_prediction
 
 from models import Ridge_regression
 from sqlalchemy.orm.session import Session

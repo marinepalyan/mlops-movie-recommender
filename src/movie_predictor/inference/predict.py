@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.movie_predictor.models.model_loading import load_model, load_scaler, load_encoder
+from movie_predictor.models.model_loading import load_model, load_scaler, load_encoder
 
 
 def predict(input_data) -> dict:

@@ -1,6 +1,6 @@
 import logging
 
-from src.movie_predictor.api.config import Config
+from movie_predictor.api.config import Config
 from flask import Flask
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine

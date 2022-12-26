@@ -1,6 +1,6 @@
 import pytest
 import warnings
-from src.movie_predictor.models.model_loading import load_model
+from movie_predictor.models.model_loading import load_model
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 warnings.filterwarnings("ignore")
