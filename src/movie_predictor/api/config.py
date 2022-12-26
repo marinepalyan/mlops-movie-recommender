@@ -17,6 +17,9 @@ FORMATTER = logging.Formatter(
 # Project Directories
 ROOT = pathlib.Path(api.__file__).resolve().parent.parent
 
+CONFIG_FILE_PATH = ROOT / "config.yml"
+TRAINED_MODEL_DIR = ROOT / "models"
+DATASET_DIR = ROOT / "data"
 
 class Config(BaseModel):
     DEBUG = False
@@ -69,8 +72,6 @@ class AppConfig(BaseModel):
     """
 
     package_name: str
-    pipeline_name: str
-    pipeline_save_file: str
     cleaned_data: str
 
 
@@ -80,10 +81,8 @@ class ModelConfig(BaseModel):
     training and feature engineering.
     """
 
-    drop_features: t.Sequence[str]
+    drop_features: list[str]
     target: str
-    cat: t.Sequence[str]
-    num: t.Sequence[str]
     test_size: float
 
         
@@ -119,3 +118,39 @@ def _disable_irrelevant_loggers() -> None:
         "openapi_spec_validator",
     ):
         logging.getLogger(logger_name).level = logging.WARNING
+
+        
+def find_config_file() -> Path:
+    """Locate the configuration file."""
+    if CONFIG_FILE_PATH.is_file():
+        return CONFIG_FILE_PATH
+    raise Exception(f"Config not found at {CONFIG_FILE_PATH!r}")
+
+
+def fetch_config_from_yaml(cfg_path: Path = None) -> t.Dict:
+    """Parse YAML containing the package configuration."""
+    if not cfg_path:
+        cfg_path = find_config_file()
+
+    if cfg_path:
+        with open(cfg_path, "r") as conf_file:
+            parsed_config = safe_load(conf_file.read())
+            return parsed_config
+    raise OSError(f"Did not find config file at path: {cfg_path}")
+
+
+def create_and_validate_config(parsed_config: t.Optional[t.Dict] = None) -> Config:
+    """Run validation on config values."""
+    if parsed_config is None:
+        parsed_config = fetch_config_from_yaml()
+
+    # specify the data attribute from the strictyaml YAML type.
+    _config = Config(
+        app_config=AppConfig(**parsed_config),
+        model_config=ModelConfig(**parsed_config),
+    )
+
+    return _config
+
+
+config = create_and_validate_config()
