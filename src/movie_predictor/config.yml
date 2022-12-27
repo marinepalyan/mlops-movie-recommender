@@ -10,7 +10,7 @@ drop_features: ['name', 'year', 'score']
 
 # Variables
 # The variable we are attempting to predict (sale price)
-target: score
+target: 'score'
 
 # set train/test split
 test_size: 0.2
