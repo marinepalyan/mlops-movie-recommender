@@ -2,6 +2,7 @@ import numpy as np
 
 from movie_predictor.models.model_loading import load_model, load_scaler, load_encoder
 
+from movie_predictor.api.config import config
 
 def predict(input_data) -> dict:
     """Make a prediction using a saved model pipeline."""
