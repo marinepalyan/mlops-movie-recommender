@@ -9,15 +9,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import OneHotEncoder
 
+from movie_predictor.api.config import config
+
 df = pd.read_csv("../data/cleaned_data.csv")
-X, y = df.drop(['name', 'year', 'score'], axis=1), df['score']
+X, y = df.drop(config.model_config.drop_features, axis=1), df[config.model_config.target]
 
 # Fix some column types
 cat_cols = ['rating', 'genre', 'director', 'writer', 'star', 'country']
 for col in cat_cols:
     X[col] = X[col].astype('category')
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=config.model_config.test_size)
 
 num = list(X_train.select_dtypes('number').columns)
 cat = list(X_train.select_dtypes('category').columns)

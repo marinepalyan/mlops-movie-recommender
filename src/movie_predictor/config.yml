@@ -1,0 +1,16 @@
+# Package Overview
+package_name: movie_predictor
+
+# Data Files
+cleaned_data: cleaned_data.csv
+
+# this variable is to calculate the temporal variable
+# but is dropped prior to model training.
+drop_features: ['name', 'year', 'score']
+
+# Variables
+# The variable we are attempting to predict (sale price)
+target: 'score'
+
+# set train/test split
+test_size: 0.2

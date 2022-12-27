@@ -5,6 +5,10 @@ import sys
 
 import api
 
+import typing as t
+from pydantic import BaseModel, validator
+from yaml import safe_load
+
 # logging format
 FORMATTER = logging.Formatter(
     "%(asctime)s — %(name)s — %(levelname)s —" "%(funcName)s:%(lineno)d — %(message)s"
@@ -13,8 +17,11 @@ FORMATTER = logging.Formatter(
 # Project Directories
 ROOT = pathlib.Path(api.__file__).resolve().parent.parent
 
+CONFIG_FILE_PATH = ROOT / "config.yml"
+TRAINED_MODEL_DIR = ROOT / "models"
+DATASET_DIR = ROOT / "data"
 
-class Config:
+class Config(BaseModel):
     DEBUG = False
     TESTING = False
     ENV = os.getenv("FLASK_ENV", "production")
@@ -27,17 +34,28 @@ class Config:
     )  # more on the URI here: https://docs.sqlalchemy.org/en/20/core/engines.html
 
     # DB config matches docker container
-    DB_USER = os.getenv("DB_USER", "davit")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "19dv009")
+    DB_USER = os.getenv("DB_USER", "film_user")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "film_user1")
     DB_PORT = os.getenv("DB_PORT", 7619)
     DB_HOST = os.getenv("DB_HOST", "0.0.0.0")
     DB_NAME = os.getenv("DB_NAME", "ml_api_dev")
-
+    
+    app_config: AppConfig
+    model_config: ModelConfig
 
 class DevelopmentConfig(Config):
-    DEBUG = True
-    ENV = "development"  # do not use in production!
+
     LOGGING_LEVEL = logging.DEBUG
+    DB_USER = os.getenv("DB_USER", "film_user")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "film_user1")
+    DB_PORT = os.getenv("DB_PORT", 7619)
+    DB_HOST = os.getenv("DB_HOST", "0.0.0.0")
+    DB_NAME = "ml_api"
+
+    SQLALCHEMY_DATABASE_URI = (
+        f"postgresql+psycopg2://{DB_USER}:"
+        f"{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
 
 
 class TestingConfig(Config):
@@ -46,8 +64,8 @@ class TestingConfig(Config):
     LOGGING_LEVEL = logging.DEBUG
 
     # DB config matches docker container
-    DB_USER = os.getenv("DB_USER", "test_davit")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "19dv009")
+    DB_USER = os.getenv("DB_USER", "film_user_test")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "film_user1_test")
     DB_PORT = os.getenv("DB_PORT", 7618)
     DB_HOST = os.getenv("DB_HOST", "0.0.0.0")
     DB_NAME = "ml_api_test"
@@ -56,7 +74,26 @@ class TestingConfig(Config):
         f"{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
+class AppConfig(BaseModel):
+    """
+    Application-level config.
+    """
 
+    package_name: str
+    cleaned_data: str
+
+
+class ModelConfig(BaseModel):
+    """
+    All configuration relevant to model
+    training and feature engineering.
+    """
+
+    drop_features: list[str]
+    target: str
+    test_size: float
+
+        
 class ProductionConfig(Config):
     pass
 
@@ -89,3 +126,39 @@ def _disable_irrelevant_loggers() -> None:
         "openapi_spec_validator",
     ):
         logging.getLogger(logger_name).level = logging.WARNING
+
+        
+def find_config_file() -> Path:
+    """Locate the configuration file."""
+    if CONFIG_FILE_PATH.is_file():
+        return CONFIG_FILE_PATH
+    raise Exception(f"Config not found at {CONFIG_FILE_PATH!r}")
+
+
+def fetch_config_from_yaml(cfg_path: Path = None) -> t.Dict:
+    """Parse YAML containing the package configuration."""
+    if not cfg_path:
+        cfg_path = find_config_file()
+
+    if cfg_path:
+        with open(cfg_path, "r") as conf_file:
+            parsed_config = safe_load(conf_file.read())
+            return parsed_config
+    raise OSError(f"Did not find config file at path: {cfg_path}")
+
+
+def create_and_validate_config(parsed_config: t.Optional[t.Dict] = None) -> Config:
+    """Run validation on config values."""
+    if parsed_config is None:
+        parsed_config = fetch_config_from_yaml()
+
+    # specify the data attribute from the strictyaml YAML type.
+    _config = Config(
+        app_config=AppConfig(**parsed_config),
+        model_config=ModelConfig(**parsed_config),
+    )
+
+    return _config
+
+
+config = create_and_validate_config()
