@@ -15,7 +15,9 @@ FORMATTER = logging.Formatter(
 )
 
 # Project Directories
-ROOT = pathlib.Path(api.__file__).resolve().parent.parent
+# ROOT = pathlib.Path(api.__file__).resolve().parent.parent
+ROOT = pathlib.Path("C:/Users/sonaasat/Documents/FALL2022/MLOps/mlops-movie-recommender/src/movie_predictor")
+APP_NAME = 'movie_predictor'
 
 CONFIG_FILE_PATH = ROOT / "config.yml"
 TRAINED_MODEL_DIR = ROOT / "models"
@@ -40,8 +42,8 @@ class Config(BaseModel):
     DB_HOST = os.getenv("DB_HOST", "0.0.0.0")
     DB_NAME = os.getenv("DB_NAME", "ml_api_dev")
     
-    app_config: AppConfig
-    model_config: ModelConfig
+#    app_config: AppConfig
+#    model_config: ModelConfig
 
 class DevelopmentConfig(Config):
 
@@ -127,6 +129,7 @@ def _disable_irrelevant_loggers() -> None:
     ):
         logging.getLogger(logger_name).level = logging.WARNING
 
+Path = ''
         
 def find_config_file() -> Path:
     """Locate the configuration file."""
